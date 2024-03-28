@@ -5,7 +5,7 @@ metadata:
   displayName: Node.js Runtime
   description: Stack with Node.js 18
   tags: ["Node.js", "Express", "ubi8"]
-  projectType: "Node.js"
+  projectType:1G "Node.js"
   language: "JavaScript"
   attributes:
     alpha.dockerimage-port: 3001
@@ -35,6 +35,36 @@ components:
           targetPort: 3001
           path: /
           secure: true
+  - name: outerloop-service
+    kubernetes:
+      inlined: |
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: my-nodejs
+        spec:
+          ports:
+          - name: "3001"
+            port: 3001
+            protocol: TCP
+            targetPort: 3001
+          selector:
+            app: my-nodejs
+          type: NodePort
+  - name: outerloop-url
+    kubernetes:
+      inlined: |
+        apiVersion: route.openshift.io/v1
+        kind: Route
+        metadata:
+          name: my-nodejs
+        spec:
+          path: /
+          to:
+            kind: Service
+            name: my-nodejs
+          port:
+            targetPort: 3001         
 commands:
   - id: build-image
     apply:
@@ -42,11 +72,19 @@ commands:
   - id: deployk8s
     apply:
       component: kubernetes-deploy
+  - id: k8s-service
+    apply:
+      component: outerloop-service
+  - id: k8s-url
+    apply:
+      component: outerloop-url      
   - id: deploy
     composite:
       commands:
         - build-image
         - deployk8s
+        - k8s-service
+        - k8s-url        
       group:
         kind: deploy
         isDefault: true
