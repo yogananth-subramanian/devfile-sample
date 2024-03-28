@@ -37,34 +37,10 @@ components:
           secure: true
   - name: outerloop-service
     kubernetes:
-      inlined: |
-        apiVersion: v1
-        kind: Service
-        metadata:
-          name: my-nodejs
-        spec:
-          ports:
-          - name: "3001"
-            port: 3001
-            protocol: TCP
-            targetPort: 3001
-          selector:
-            app: my-nodejs
-          type: NodePort
+      uri: svc.yaml
   - name: outerloop-url
     kubernetes:
-      inlined: |
-        apiVersion: route.openshift.io/v1
-        kind: Route
-        metadata:
-          name: my-nodejs
-        spec:
-          path: /
-          to:
-            kind: Service
-            name: my-nodejs
-          port:
-            targetPort: 3001         
+      uri: route.yaml        
 commands:
   - id: build-image
     apply:
