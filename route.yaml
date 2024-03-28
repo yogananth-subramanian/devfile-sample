@@ -8,4 +8,4 @@ spec:
     kind: Service
     name: my-nodejs
   port:
-    targetPort: 3001 
+    targetPort: 8080
