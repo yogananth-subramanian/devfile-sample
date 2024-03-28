@@ -1,0 +1,11 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: my-nodejs
+spec:
+  path: /
+  to:
+    kind: Service
+    name: my-nodejs
+  port:
+    targetPort: 3001 
